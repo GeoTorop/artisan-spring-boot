@@ -32,9 +32,11 @@
                     <div class="card-body">
                         <h5 class="card-title">${product.title}</h5>
                         <p class="card-text">${product.price} €</p>
-                        <form action="/favorite/add/${product.id}" method="post">
-                            <button type="submit" class="btn btn-light btn-primary">Add</button>
-                        </form>
+                        <#if user.email??>
+                            <form action="/favorite/add/${product.id}" method="post">
+                                <button type="submit" class="btn btn-light btn-primary" name="addToFavorites">Add to favorites</button>
+                            </form>
+                        </#if>
                     </div>
                     <div class="card-footer">
                         ${product.city}

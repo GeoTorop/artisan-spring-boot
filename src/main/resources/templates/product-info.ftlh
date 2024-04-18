@@ -36,10 +36,18 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
+
     <hr>
     <p><h1 style="text-align: center">${product.title} | ${product.price} €</h1></p>
     <p style="text-align: center">${product.description}</p>
     <p style="text-align: center">Seller's phone number: <b>${authorProduct.phoneNumber}</b></p>
+    <div style="text-align: center">
+        <#if user.email??>
+            <form action="/favorite/add/${product.id}" method="post">
+                <button type="submit" class="btn btn-dark btn-primary" name="addToFavorites">Add to favorites</button>
+            </form>
+        </#if>
+    </div>
 
     <hr>
     <p style="text-align: center">

@@ -1,40 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>ARTISAN</title>
-</head>
-<body>
-<h1>ARTISAN</h1>
-<hr>
-<h4>Admin panel</h4>
-<table border="1">
-    <tr>
-        <th>Email</th>
-        <th>Telephone number</th>
-        <th>Activity</th>
-        <th>Roles</th>
-        <th>Ban user</th>
-        <th>Detailed info</th>
-        <th>Editing</th>
-    </tr>
-    <#list users as user>
+<#import "blocks/template.ftlh" as t>
+<@t.template user>
+    <h1 style="text-align: center">Admin panel</h1><hr>
+    <table class="table table-hover table-dark">
         <tr>
-            <th>${user.email}</th>
-            <th>${user.phoneNumber}</th>
-            <th><#if user.active>true<#else>false</#if></th>
-            <th><#list user.roles as role>${role}</#list></th>
-            <th>
-                <form action="/admin/user/ban/${user.id}" method="post">
-                    <input type="hidden" name="_csrf" value="${_csrf.token}">
-                    <input type="submit" value="Ban user">
-                </form>
-            </th>
-            <th><a href="/admin/user/edit/${user.id}">Editing</a></th>
-            <th><a href="/user/${user.id}">Detailed info</a></th>
+            <th scope="col">Email</th>
+            <th scope="col">Telephone number</th>
+            <th scope="col">Activity</th>
+            <th scope="col">Role</th>
+            <th scope="col">Ban</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Detailed info</th>
         </tr>
-    <#else>
-        <h3>No users found</h3>
-    </#list>
-</table>
-</body>
-</html>
+        <#list users as user>
+            <tr>
+                <th>${user.email}</th>
+                <th>${user.phoneNumber}</th>
+                <th><#if user.active>true<#else>false</#if></th>
+                <th><#list user.roles as role>${role}</#list></th>
+                <th>
+                    <form action="/admin/user/ban/${user.id}" method="post">
+                        <input type="hidden" name="_csrf" value="${_csrf.token}">
+                        <input type="submit" class="btn btn-light" value="Ban">
+                    </form>
+                </th>
+                <th><a href="/admin/user/edit/${user.id}">Edit</a></th>
+                <th><a href="/user/${user.id}">Detailed info</a></th>
+            </tr>
+        <#else>
+            <h3>No users</h3>
+        </#list>
+    </table>
+</@t.template>

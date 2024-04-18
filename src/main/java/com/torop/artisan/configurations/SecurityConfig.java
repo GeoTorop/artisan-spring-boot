@@ -2,54 +2,54 @@ package com.torop.artisan.configurations;
 
 import com.torop.artisan.service.CustomUserDetailService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
-@Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig {
-    private final CustomUserDetailService userDetailService;
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private final CustomUserDetailService userDetailsService;
 
-    @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((requests) -> requests
-                        //два раза добавил /user/**
-                        .requestMatchers("/", "/registration", "/user/**").permitAll()
-                        .requestMatchers("/product/**", "/images/**", "/user/**")
-                        .permitAll()
-                        .anyRequest().authenticated()
-                        /*.requestMatchers("/", "/registration").permitAll()
-                        .requestMatchers("/product/**", "/product-info/**", "/image/**")
-                        //.hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
-                        .permitAll() //позволяет просматривать страницы с товарами без регистрации
-                        .anyRequest().authenticated()*/
-                )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll()
-                )
-                .logout((logout) -> logout.permitAll());
-        return http.build();
+                .authorizeRequests()
+                .antMatchers("/", "/product/**", "/images/**", "/registration", "/user/**", "/static/**")
+                .permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .permitAll()
+                .and()
+                .logout()
+                .permitAll()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
 
-
+    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailService)
+        auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(8);
     }
 }

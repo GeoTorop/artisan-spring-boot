@@ -3,21 +3,23 @@
     <h1 style="text-align: center">Favorites</h1>
     <hr>
     <div class="card-columns">
-        <#list products as product>
-            <a href="/product/${product.id}" class="product-link">
-                <div class="card text-white bg-dark my-3 product">
-                    <img src="/images/${product.previewImageId}" class="card-img-top">
-                    <div class="card-body">
-                        <h5 class="card-title">${product.title}</h5>
-                        <p class="card-text">${product.price} €</p>
+        <#if favorites?has_content>
+            <#list favorites as favorite>
+                <a href="/product/${favorite.product.id}" class="product-link">
+                    <div class="card text-white bg-dark my-3 product">
+                        <img src="/images/${favorite.product.previewImageId}" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">${favorite.product.title}</h5>
+                            <p class="card-text">${favorite.product.price} €</p>
+                        </div>
+                        <div class="card-footer">
+                            ${favorite.product.city}
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        ${product.city}
-                    </div>
-                </div>
-            </a>
+                </a>
+            </#list>
         <#else>
-            <h1 style="text-align: center">Ad not found, try again</h1>
-        </#list>
+            <h1 style="text-align: center">No favorite products found</h1>
+        </#if>
     </div>
 </@t.template>

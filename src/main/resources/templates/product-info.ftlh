@@ -43,9 +43,18 @@
     <p style="text-align: center">Seller's phone number: <b>${authorProduct.phoneNumber}</b></p>
     <div style="text-align: center">
         <#if user.email??>
-            <form action="/favorite/add/${product.id}" method="post">
-                <button type="submit" class="btn btn-dark btn-primary" name="addToFavorites">Add to favorites</button>
-            </form>
+            <#if user?has_content>
+                <#if favoriteService.isProductInFavorites(product.id, user)>
+                    <form action="/favorites" method="get">
+                        <button type="submit" class="btn btn-success btn-primary">Already exists in Favorites</button>
+                    </form>
+                <#else>
+                    <form action="/addToFavorites/${product.id}" method="post">
+                        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-light btn-primary" name="addToFavorites">Add to favorites</button>
+                    </form>
+                </#if>
+            </#if>
         </#if>
     </div>
 

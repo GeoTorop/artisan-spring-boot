@@ -33,10 +33,16 @@
                         <h5 class="card-title">${product.title}</h5>
                         <p class="card-text">${product.price} €</p>
                         <#if user.email??>
-                            <form action="/addToFavorites/${product.id}" method="post">
-                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-                                <button type="submit" class="btn btn-light btn-primary" name="addToFavorites">Add to favorites</button>
-                            </form>
+                            <#if favoriteService.isProductInFavorites(product.id, user)>
+                                <form action="/favorites" method="get">
+                                    <button type="submit" class="btn btn-success btn-primary">Already exists in Favorites</button>
+                                </form>
+                            <#else>
+                                <form action="/addToFavorites/${product.id}" method="post">
+                                    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-light btn-primary" name="addToFavorites">Add to favorites</button>
+                                </form>
+                            </#if>
                         </#if>
                     </div>
                     <div class="card-footer">

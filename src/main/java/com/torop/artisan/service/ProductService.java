@@ -1,13 +1,16 @@
 package com.torop.artisan.service;
 
+import com.torop.artisan.model.Favorite;
 import com.torop.artisan.model.Image;
 import com.torop.artisan.model.Product;
 import com.torop.artisan.model.User;
+import com.torop.artisan.repository.FavoriteRepository;
 import com.torop.artisan.repository.ProductRepository;
 import com.torop.artisan.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public List<Product> listProducts(String searchWord, String searchCity) {
         if (searchWord == null || searchWord.isEmpty()) {
@@ -79,11 +83,13 @@ public class ProductService {
         return image;
     }
 
+    @Transactional
     public void deleteProduct(User user, Long id) {
         Product product = productRepository.findById(id).orElse(null);
         if (product != null) {
             if (product.getUser().getId().equals(user.getId())) {
                 productRepository.delete(product);
+                user.getProducts().remove(product);
                 log.info("Product with id = {} was deleted", id);
             } else {
                 log.error("User: {} haven't this product with id = {}", user.getEmail(), id);

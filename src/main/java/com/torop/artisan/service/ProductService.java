@@ -63,7 +63,9 @@ public class ProductService {
     }
 
     public User getUserByPrincipal(Principal principal) {
-        if (principal == null) return new User();
+        if (principal == null) {
+            return new User();
+        }
         return userRepository.findByEmail(principal.getName());
     }
 
@@ -78,8 +80,7 @@ public class ProductService {
     }
 
     public void deleteProduct(User user, Long id) {
-        Product product = productRepository.findById(id)
-                .orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
         if (product != null) {
             if (product.getUser().getId().equals(user.getId())) {
                 productRepository.delete(product);

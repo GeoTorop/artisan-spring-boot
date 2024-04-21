@@ -32,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/favorites").authenticated()
                 .antMatchers("/addToFavorites/**").authenticated()
+                .antMatchers("/removeFromFavorites/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

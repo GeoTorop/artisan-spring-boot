@@ -23,9 +23,19 @@ public class FavoriteService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    public void addToFavorites(Long productId, Principal principal) {
+    public Favorite addToFavorites(Long productId, Principal principal) {
         Product product = productRepository.findById(productId).get(); // delete .get & add .orElse(null);
         User user = getUserByPrincipal(principal);
+        List<Favorite> favoriteList = favoriteRepository.findByUser(user); // for duplicated products
+        List<Favorite> filteredList = favoriteList.stream().filter(x -> x.getProduct().getId() == productId).collect(Collectors.toList());
+        if (filteredList.size() > 0) {
+            return null;
+        }
+        if (product != null && user != null) {
+            Favorite favorite = new Favorite(user, product);
+            favoriteRepository.save(favorite);
+        }
+        return null;// added with favoriteList & filteredList
     }
 
     public void removeFromFavorites(Long productId) {

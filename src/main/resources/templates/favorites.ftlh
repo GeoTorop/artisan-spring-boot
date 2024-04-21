@@ -7,6 +7,14 @@
             <#list favorites as favorite>
                 <a href="/product/${favorite.product.id}" class="product-link">
                     <div class="card text-white bg-dark my-3 product">
+                        <div class="card-top">
+                            <form action="/removeFromFavorites/${favorite.id}" method="post">
+                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-danger m-3">
+                                    Remove from favorites
+                                </button>
+                            </form>
+                        </div>
                         <img src="/images/${favorite.product.previewImageId}" class="card-img-top">
                         <div class="card-body">
                             <h5 class="card-title">${favorite.product.title}</h5>

@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +24,16 @@ public class FavoriteService {
     private final UserRepository userRepository;
 
     public void addToFavorites(Long productId, Principal principal) {
-        Product product = productRepository.findById(productId).get();
+        Product product = productRepository.findById(productId).get(); // delete .get & add .orElse(null);
         User user = getUserByPrincipal(principal);
-        if (product != null && user != null) {
-            Favorite favorite = new Favorite(user, product);
-            favoriteRepository.save(favorite);
-        }
+    }
+
+    public void removeFromFavorites(Long productId) {
+        favoriteRepository.deleteById(productId);
+    }
+
+    public boolean isProductInFavorites(Long productId, User user) {
+        return favoriteRepository.existsByProduct_IdAndUser(productId, user);
     }
 
     public List<Favorite> getFavoritesByUser(User user) {
@@ -35,37 +42,8 @@ public class FavoriteService {
 
     public User getUserByPrincipal(Principal principal) {
         if (principal == null) {
-            return null;
+            return new User(); // was: return null
         }
         return userRepository.findByEmail(principal.getName());
     }
-
-    /*private final FavoriteRepository favoriteRepository;
-    private final ProductRepository productRepository;
-    private final UserRepository userRepository;
-
-    public void addToFavorites(Long productId, Principal principal) {
-        Product product = productRepository.findById(productId).orElse(null);
-        User user = getUserByPrincipal(principal);
-        if (product != null && user != null) {
-            Favorite favorite = new Favorite(user, product);
-            favoriteRepository.save(favorite);
-        }
-    }
-
-    public void removeFromFavorites(Long productId, Principal principal) {
-        Product product = productRepository.findById(productId).orElse(null);
-        User user = getUserByPrincipal(principal);
-        if (product != null && user != null) {
-            Favorite favorite = favoriteRepository.findByUserAndProduct(user, product);
-            if (favorite != null) {
-                favoriteRepository.delete(favorite);
-            }
-        }
-    }
-
-    public User getUserByPrincipal(Principal principal) {
-        if (principal == null) return null;
-        return userRepository.findByEmail(principal.getName());
-    }*/
 }

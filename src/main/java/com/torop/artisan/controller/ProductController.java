@@ -1,7 +1,9 @@
 package com.torop.artisan.controller;
 
+import com.torop.artisan.model.Favorite;
 import com.torop.artisan.model.Product; //user
 import com.torop.artisan.model.User;
+import com.torop.artisan.service.FavoriteService;
 import com.torop.artisan.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final FavoriteService favoriteService; //
 
     @GetMapping("/")
     public String products(@RequestParam(name = "searchWord", required = false) String title,
@@ -27,6 +30,7 @@ public class ProductController {
         model.addAttribute("products", productService.listProducts(title, city));
         model.addAttribute("user", productService.getUserByPrincipal(principal));
         model.addAttribute("searchWord", title);//
+        model.addAttribute("favoriteService", favoriteService);
         return "products";
     }
 
@@ -36,7 +40,8 @@ public class ProductController {
         model.addAttribute("user", productService.getUserByPrincipal(principal));//
         model.addAttribute("product", product);
         model.addAttribute("images", product.getImages());
-        model.addAttribute("authorProduct", product.getUser());//
+        model.addAttribute("authorProduct", product.getUser());
+        model.addAttribute("favoriteService", favoriteService); //
         return "product-info";
     }
 

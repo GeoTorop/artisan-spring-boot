@@ -1,12 +1,15 @@
 package com.torop.artisan.service;
 
+import com.torop.artisan.model.Product;
 import com.torop.artisan.model.User;
 import com.torop.artisan.model.enums.Role;
+import com.torop.artisan.repository.ProductRepository;
 import com.torop.artisan.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProductService productService;
+    private final ProductRepository productRepository;
 
     public boolean createUser(User user) {
         String email = user.getEmail();
@@ -37,18 +42,27 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional
     public void banUser(Long id) {
         User user = userRepository.findById(id).orElse(null);
+        //Product product = productRepository.findById(id).orElse(null);
         if (user != null) {
             if (user.isActive()) {
                 user.setActive(false);
                 log.info("Ban user with id = {}; email: {}", user.getId(), user.getEmail());
+                //productRepository.deleteByUser(user);
+                List<Product> userProducts = user.getProducts();
+                for (Product product : userProducts) {
+                    productRepository.delete(product);
+                }
+                userProducts.clear();
             } else {
                 user.setActive(true);
                 log.info("Unban user with id = {}; email: {}", user.getId(), user.getEmail());
             }
+            userRepository.save(user);
         }
-        userRepository.save(user);
+        //userRepository.save(user);
     }
 
     public void changeUserRoles(User user, Map<String, String> form) {

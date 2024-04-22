@@ -1,8 +1,8 @@
 <#import "blocks/template.ftlh" as t>
 <@t.template user>
-    <h1 style="text-align: center">Edit suer ${user.name}</h1><hr>
+    <h1 style="text-align: center">Edit user ${user.name}</h1><hr>
     <form action="/admin/user/edit" method="post">
-        <#list roles as role>
+        <#list roles as role> <!-- always under "Cannot resolve variable 'roles'" don't worry -->
             <div>
                 <label><input type="checkbox" name="${role}" ${user.roles?seq_contains(role)?string("checked", "")}>${role}</label>
             </div>

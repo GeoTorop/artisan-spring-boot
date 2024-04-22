@@ -14,6 +14,31 @@
         <br>
         Telephone number: <b>${user.phoneNumber}</b>
         <br>
+
+        <a class="btn btn-dark mt-3 mb-3" style="text-align: center; width: 100%"
+           data-toggle="collapse" href="#profileEdit" role="button"
+           aria-expanded="false" aria-controls="profileEdit">
+            Edit profile
+        </a>
+
+        <div class="collapse mb-3" id="profileEdit" style="">
+            <form action="/profile/edit" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Username</label>
+                    <input type="text" required class="form-control"
+                           id="name" name="name" value="${user.name}">
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" required class="form-control"
+                           id="phoneNumber" name="phoneNumber" value="${user.phoneNumber}">
+                </div>
+
+                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                <button type="submit" style="width: 100%" class="btn btn-dark">Change profile</button>
+            </form>
+        </div>
+
         <br>
         <#if user.isAdmin()>
             <a class="btn btn-dark mb-3" style="text-align: center; width: 100%"

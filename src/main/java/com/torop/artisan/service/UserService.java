@@ -65,6 +65,12 @@ public class UserService {
         //userRepository.save(user);
     }
 
+    public void updateNameAndPhoneNumber(User user, String name, String phoneNumber) {
+        user.setName(name);
+        user.setPhoneNumber(phoneNumber);
+        userRepository.save(user);
+    }
+
     public void changeUserRoles(User user, Map<String, String> form) {
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)

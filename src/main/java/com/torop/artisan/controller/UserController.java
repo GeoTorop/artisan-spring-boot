@@ -5,9 +5,7 @@ import com.torop.artisan.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -36,6 +34,13 @@ public class UserController {
         User user = userService.getUserByPrincipal(principal);
         model.addAttribute("user", user);
         return "profile";
+    }
+
+    @PostMapping("/profile/edit")
+    public String editProfile(@RequestParam("name") String name, @RequestParam("phoneNumber") String phoneNumber, Principal principal) {
+        User user = userService.getUserByPrincipal(principal);
+        userService.updateNameAndPhoneNumber(user, name, phoneNumber);
+        return "redirect:/profile";
     }
 
     @GetMapping("/registration")

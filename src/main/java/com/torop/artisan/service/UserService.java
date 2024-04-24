@@ -1,8 +1,10 @@
 package com.torop.artisan.service;
 
+import com.torop.artisan.model.Favorite;
 import com.torop.artisan.model.Product;
 import com.torop.artisan.model.User;
 import com.torop.artisan.model.enums.Role;
+import com.torop.artisan.repository.FavoriteRepository;
 import com.torop.artisan.repository.ProductRepository;
 import com.torop.artisan.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ProductService productService;
     private final ProductRepository productRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public boolean createUser(User user) {
         String email = user.getEmail();
@@ -45,14 +48,19 @@ public class UserService {
     @Transactional
     public void banUser(Long id) {
         User user = userRepository.findById(id).orElse(null);
-        //Product product = productRepository.findById(id).orElse(null);
         if (user != null) {
             if (user.isActive()) {
                 user.setActive(false);
                 log.info("Ban user with id = {}; email: {}", user.getId(), user.getEmail());
-                //productRepository.deleteByUser(user);
+
                 List<Product> userProducts = user.getProducts();
                 for (Product product : userProducts) {
+                    for (Favorite favorite : product.getFavorites()) {
+                        if (favorite.getUser().getId().equals(user.getId())) {
+                            product.removeFavorite(favorite);
+                            favoriteRepository.delete(favorite); // remove from favorites; bug 2
+                        }
+                    }
                     productRepository.delete(product);
                 }
                 userProducts.clear();

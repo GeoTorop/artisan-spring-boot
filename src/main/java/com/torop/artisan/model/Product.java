@@ -30,6 +30,9 @@ public class Product {
     private Long previewImageId;
     private LocalDateTime dateOfCreated;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true) // for deleting products for banned user; bug 2
+    private List<Favorite> favorites = new ArrayList<>();
+
     @PrePersist
     private void onCreate() {
         dateOfCreated = LocalDateTime.now();
@@ -38,5 +41,15 @@ public class Product {
     public void addImageToProduct(Image image) {
         image.setProduct(this);
         images.add(image);
+    }
+
+    public void addFavorite(Favorite favorite) { // useless for now; bug 2
+        favorites.add(favorite);
+        favorite.setProduct(this);
+    }
+
+    public void removeFavorite(Favorite favorite) { // for deleting products for banned user; bug 2
+        favorites.remove(favorite);
+        favorite.setProduct(null);
     }
 }

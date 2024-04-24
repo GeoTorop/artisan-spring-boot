@@ -90,6 +90,11 @@ public class ProductService {
             if (product.getUser().getId().equals(user.getId())) {
                 productRepository.delete(product);
                 user.getProducts().remove(product);
+
+                for (Favorite favorite : product.getFavorites()) { // bug 1
+                    favoriteRepository.delete(favorite);
+                }
+
                 log.info("Product with id = {} was deleted", id);
             } else {
                 log.error("User: {} haven't this product with id = {}", user.getEmail(), id);
